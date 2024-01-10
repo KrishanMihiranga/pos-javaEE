@@ -1,16 +1,24 @@
 package lk.ijse.posbackend.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lk.ijse.posbackend.bo.BOFactory;
+import lk.ijse.posbackend.bo.custom.CustomerBO;
+import lk.ijse.posbackend.bo.custom.impl.CustomerBoImpl;
+import lk.ijse.posbackend.dto.CustomerDTO;
 
 import java.io.IOException;
 
 @WebServlet(name = "Customer", urlPatterns = "/customer", loadOnStartup = 4)
 public class CustomerController extends HttpServlet {
+
+    private CustomerBO customerBO = (CustomerBoImpl) BOFactory.getInstance().getBo(BOFactory.BOTypes.CUSTOMER);
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -19,11 +27,56 @@ public class CustomerController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Post");
+        ObjectMapper mapper = new ObjectMapper();
+        CustomerDTO customer = mapper.readValue(req.getInputStream(), CustomerDTO.class);
+        System.out.println(customer);
+
+        try {
+            if (customerBO.saveCustomer(customer)){
+                resp.getWriter().write("Customer Saved");
+            }else{
+                resp.getWriter().write("Error while saving Customer");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            resp.getWriter().write("Error");
+        }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Put");
+        ObjectMapper mapper = new ObjectMapper();
+        CustomerDTO customer = mapper.readValue(req.getInputStream(), CustomerDTO.class);
+        System.out.println(customer);
+
+        try {
+            if (customerBO.updateCustomer(customer)){
+                resp.getWriter().write("Customer Updated");
+            }else{
+                resp.getWriter().write("Error while updating Customer");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            resp.getWriter().write("Error");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(req.getReader());
+
+            String id = jsonNode.get("id").asText();
+
+            if (customerBO.deleteCustomer(id)) {
+                resp.getWriter().write("Customer Deleted");
+            } else {
+                resp.getWriter().write("Error while deleting Customer");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.getWriter().write("Error");
+        }
     }
 }
