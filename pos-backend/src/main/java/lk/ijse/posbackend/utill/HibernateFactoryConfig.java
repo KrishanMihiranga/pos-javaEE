@@ -2,6 +2,7 @@ package lk.ijse.posbackend.utill;
 
 
 import lk.ijse.posbackend.entity.Customer;
+import lk.ijse.posbackend.entity.Item;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -15,7 +16,8 @@ public class HibernateFactoryConfig {
         configuration.configure();
 
         configuration
-                .addAnnotatedClass(Customer.class);
+                .addAnnotatedClass(Customer.class)
+                .addAnnotatedClass(Item.class);
 
         sessionFactory = configuration.buildSessionFactory();
     }

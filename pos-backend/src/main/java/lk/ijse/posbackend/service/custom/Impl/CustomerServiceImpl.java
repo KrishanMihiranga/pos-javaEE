@@ -19,7 +19,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean delete(String id, Session session) throws Exception {
-
        session.remove(session.get(Customer.class, id));
         return true;
     }
