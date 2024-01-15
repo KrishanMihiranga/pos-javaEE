@@ -27,10 +27,6 @@ $(`#cusTable`).on('click', 'tr', function(){
     row_index = $(this).index();
 });
 
-function isDuplicatedCusId(cusId){
-    return customer_db.some(customer => customer.cusId === cusId);
-}
-
 //add customer
 $(`#add-customer`).on('click', ()=>{
     let cusId = $('#cusId').val();
@@ -38,34 +34,48 @@ $(`#add-customer`).on('click', ()=>{
     let cusAddress = $('#cusAddress').val();
     let cusSalary = $('#cusSalary').val();
     
-    if(isDuplicatedCusId(cusId)){
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The cusId you entered already in use!'
-          })
-    }else{
-        let val = validateValues(cusId, cusName, cusAddress, cusSalary);
-        if(val){
-            let customerObj = new Customer(cusId, cusName, cusAddress, cusSalary);
-            customer_db.push(customerObj);
-            LoadCustomerData();
-            $(`#reset-customer`).click();
+
+    let val = validateValues(cusId, cusName, cusAddress, cusSalary);
+    if(val){
+        const cusData ={
+            id:cusId,
+            name: cusName,
+            address: cusAddress,
+            salary: cusSalary
+        }
+        console.log(cusData)
+        const customerJson = JSON.stringify(cusData);
+        console.log(customerJson)
+
+        $.ajax({
+            url:"http://localhost:8080/pos_backend_war_exploded/customer",
+                type:"POST",
+                data:customerJson,
+                headers:{"Content-Type":"application/json"},
+                success: (res) =>{
+                    console.log(JSON.stringify(res))
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                },
+                error: (err)=>{
+                    console.error(err)
+                }
+        });
+        
+        // LoadCustomerData();
+        //$(`#reset-customer`).click();
     
-            totalCustomerCount(customer_db.length);
-    
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Your work has been saved',
-                showConfirmButton: false,
-                timer: 1500
-            })
+        totalCustomerCount(customer_db.length);
         }else{
             return;
         }
     }
-});
+);
 //update customer
 $(`#btn-update-customer`).on('click', ()=>{
     let cusId = $('#cusId').val();

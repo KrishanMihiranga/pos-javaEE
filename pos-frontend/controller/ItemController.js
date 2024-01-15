@@ -26,9 +26,7 @@ $(`#itemTable`).on('click', 'tr', function(){
     row_index = $(this).index();
 });
 
-function isDuplicatedItemId(itemId){
-    return item_db.some(item => item.itemId === itemId);
-}
+
 //add Item
 $(`#item-save`).on('click', ()=>{
    let itemId = $('#itemId').val();
@@ -36,19 +34,42 @@ $(`#item-save`).on('click', ()=>{
    let itemPrice =  $('#itemPrice').val();
    let itemQty =$('#itemQty').val();
     
-   if(isDuplicatedItemId(itemId)){
-    Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'The Item Code you entered already in use!'
-      })
-   }else{
+
     let val = validateValues(itemId, itemName, itemPrice, itemQty);
     if(val){
-     let itemObj = new Item(itemId, itemName, itemPrice, itemQty);
-     item_db.push(itemObj);
-     LoadItemData();
-     $(`#item-reset`).click();
+
+        const itemData ={
+            id:itemId,
+            name: itemName,
+            price: itemPrice,
+            qty: itemQty
+        }
+        console.log(itemData)
+        const itemJson = JSON.stringify(itemData);
+        console.log(itemJson)
+
+        $.ajax({
+            url:"http://localhost:8080/pos_backend_war_exploded/item",
+                type:"POST",
+                data:itemJson,
+                headers:{"Content-Type":"application/json"},
+                success: (res) =>{
+                    console.log(JSON.stringify(res))
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                },
+                error: (err)=>{
+                    console.error(err)
+                }
+        });
+
+    //  LoadItemData();
+    //  $(`#item-reset`).click();
  
      totalItemCount(item_db.length);
  
@@ -65,7 +86,7 @@ $(`#item-save`).on('click', ()=>{
    }
 
     
-});
+);
 //update Item
 $(`#item-update`).on('click', ()=>{
    let itemId = $('#itemId').val();
