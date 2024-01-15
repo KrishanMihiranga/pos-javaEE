@@ -94,16 +94,44 @@ $(`#item-update`).on('click', ()=>{
    let itemPrice =  $('#itemPrice').val();
    let itemQty =$('#itemQty').val();
 
-    if(isDuplicatedItemId(itemId)){
         let val = validateValues(itemId, itemName, itemPrice, itemQty);
         if(val){
-         let itemObj = new Item(itemId, itemName, itemPrice, itemQty);
-         //update item in array
-         item_db[row_index] = itemObj;
+            const itemData ={
+                id:itemId,
+                name: itemName,
+                price: itemPrice,
+                qty: itemQty
+            }
+            console.log(itemData)
+            const itemJson = JSON.stringify(itemData);
+            console.log(itemJson)
+    
+            $.ajax({
+                url:"http://localhost:8080/pos_backend_war_exploded/item",
+                    type:"PUT",
+                    data:itemJson,
+                    headers:{"Content-Type":"application/json"},
+                    success: (res) =>{
+                        console.log(JSON.stringify(res))
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Your work has been updated',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    },
+                    error: (err)=>{
+                        console.error(err)
+                    }
+            });
      
-         LoadItemData();
-         $(`#item-reset`).click();
-         row_index = null;
+
+
+
+         //LoadItemData();
+        // $(`#item-reset`).click();
+        
          Swal.fire({
              position: 'top-end',
              icon: 'success',
@@ -114,15 +142,7 @@ $(`#item-update`).on('click', ()=>{
         }else{
          return;
         }
-    }else{
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The Item Code you entered did not exist!'
-          })
-        
-    }
-
+    
 
     
 });
@@ -140,14 +160,36 @@ $(`#item-delete`).on('click', ()=>{
       }).then((result) => {
         if (result.isConfirmed) {
             let itemID = $('#itemId').val();
-    //find item index
-    let index = item_db.findIndex(item=>item.itemId == itemID);
-
-    //delete item from the array
-    item_db.splice(index, 1);
-    LoadItemData();
+            const itemData ={
+                id:itemID
+            }
+            console.log(itemData)
+            const itemJson = JSON.stringify(itemData);
+            console.log(itemJson)
+    
+            $.ajax({
+                url:"http://localhost:8080/pos_backend_war_exploded/item",
+                    type:"DELETE",
+                    data:itemJson,
+                    headers:{"Content-Type":"application/json"},
+                    success: (res) =>{
+                        console.log(JSON.stringify(res))
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Your work has been deleted',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    },
+                    error: (err)=>{
+                        console.error(err)
+                    }
+            });
+   
+    //LoadItemData();
     totalItemCount(item_db.length);
-    $(`#item-reset`).click();
+    //$(`#item-reset`).click();
           Swal.fire(
             'Deleted!',
             'Your file has been deleted.',
