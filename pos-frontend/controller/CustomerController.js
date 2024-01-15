@@ -83,36 +83,47 @@ $(`#btn-update-customer`).on('click', ()=>{
     let cusAddress = $('#cusAddress').val();
     let cusSalary = $('#cusSalary').val();
 
-    if(isDuplicatedCusId(cusId)){
+    
         let val = validateValues(cusId, cusName, cusAddress, cusSalary);
+
         if(val){
-            let customerObj = new Customer(cusId, cusName, cusAddress, cusSalary);
-            //update item in array
-            customer_db[row_index] = customerObj;
-            LoadCustomerData();
-            $(`#reset-customer`).click();
-            row_index = null;
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Your work has been saved',
-                showConfirmButton: false,
-                timer: 1500
-            })
+            
+           // LoadCustomerData();
+           const cusData ={
+            id:cusId,
+            name: cusName,
+            address: cusAddress,
+            salary: cusSalary
+        }
+        console.log(cusData)
+        const customerJson = JSON.stringify(cusData);
+        console.log(customerJson)
+
+        $.ajax({
+            url:"http://localhost:8080/pos_backend_war_exploded/customer",
+                type:"PUT",
+                data:customerJson,
+                headers:{"Content-Type":"application/json"},
+                success: (res) =>{
+                    console.log(JSON.stringify(res))
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                },
+                error: (err)=>{
+                    console.error(err)
+                }
+        });
+        
+            
+           
         }else{
             return;
         }
-    }else{
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The cusId you entered did not exist!'
-          })
-        
-    }
-
-
-    
 });
 //delete customer
 $(`#btn-delete-customer`).on('click', ()=>{
@@ -128,15 +139,40 @@ $(`#btn-delete-customer`).on('click', ()=>{
       }).then((result) => {
         if (result.isConfirmed) {
             let cusId = $('#cusId').val();
-            //find item index
-            let index = customer_db.findIndex(item =>item.cusId == cusId);
-        
-            //delete item from the array
-            customer_db.splice(index, 1);
-        
-            LoadCustomerData();
-            $(`#reset-customer`).click();
+           
+            //LoadCustomerData();
+            //$(`#reset-customer`).click();
             totalCustomerCount(customer_db.length);
+
+            const cusData ={
+                id:cusId
+            }
+            console.log(cusData)
+            const customerJson = JSON.stringify(cusData);
+            console.log(customerJson)
+    
+            $.ajax({
+                url:"http://localhost:8080/pos_backend_war_exploded/customer",
+                    type:"DELETE",
+                    data:customerJson,
+                    headers:{"Content-Type":"application/json"},
+                    success: (res) =>{
+                        console.log(JSON.stringify(res))
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Your work has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    },
+                    error: (err)=>{
+                        console.error(err)
+                    }
+            });
+
+
+
 
           Swal.fire(
             'Deleted!',
