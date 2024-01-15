@@ -2,8 +2,13 @@ package lk.ijse.posbackend.utill;
 
 import lk.ijse.posbackend.dto.CustomerDTO;
 import lk.ijse.posbackend.dto.ItemDTO;
+import lk.ijse.posbackend.dto.OrderDTO;
 import lk.ijse.posbackend.entity.Customer;
 import lk.ijse.posbackend.entity.Item;
+import lk.ijse.posbackend.entity.OrderEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Convert {
@@ -19,5 +24,21 @@ public class Convert {
     }
     public static ItemDTO itemEntityToDto(Item item){
         return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getQty());
+    }
+
+    public static OrderEntity orderDetailDTOToEntity(OrderDTO dto){
+        System.out.println(dto);
+        List<Item> items = new ArrayList<>();
+        for (ItemDTO i : dto.getItems()) {
+            items.add(itemDTOToEntity(i));
+        }
+        return new OrderEntity(dto.getId(), dto.getDate(), customerDTOToEntity(dto.getCustomer()), items, dto.getDiscount(), dto.getTotal());
+    }
+    public static OrderDTO orderDetailEntityToDto(OrderEntity od){
+        List<ItemDTO> items = new ArrayList<>();
+        for (Item i : od.getItems()) {
+            items.add(itemEntityToDto(i));
+        }
+        return new OrderDTO(od.getId(), od.getDate(), customerEntityToDto(od.getCustomer()), items, od.getDiscount(), od.getTotal());
     }
 }
