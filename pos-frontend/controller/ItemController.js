@@ -8,13 +8,8 @@ const itemPriceRegex = /^[0-9]\d*$/;
 const itemQtyRegex = /^[1-9]\d*$/;
 
 //load table
-const LoadItemData = ()=>{
-    $(`#itemTable`).empty();
-    item_db.map((item)=>{
-        let record = `<tr><td>${item.itemId}</td><td>${item.itemName}</td><td>${item.itemPrice}</td><td>${item.itemQty}</td></tr>`;
-        $(`#itemTable`).append(record);
-    });
-}
+getAllItems();
+
 //table on click
 $(`#itemTable`).on('click', 'tr', function(){
     let data_col = $(this).find('td');
@@ -67,11 +62,8 @@ $(`#item-save`).on('click', ()=>{
                     console.error(err)
                 }
         });
-
-    //  LoadItemData();
+    
     //  $(`#item-reset`).click();
- 
-     totalItemCount(item_db.length);
  
      Swal.fire({
          position: 'top-end',
@@ -80,6 +72,8 @@ $(`#item-save`).on('click', ()=>{
          showConfirmButton: false,
          timer: 1500
      })
+
+     getAllItems();
     }else{
      return;
     }
@@ -120,16 +114,14 @@ $(`#item-update`).on('click', ()=>{
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        getAllItems();
                     },
                     error: (err)=>{
                         console.error(err)
                     }
             });
-     
+            
 
-
-
-         //LoadItemData();
         // $(`#item-reset`).click();
         
          Swal.fire({
@@ -137,8 +129,9 @@ $(`#item-update`).on('click', ()=>{
              icon: 'success',
              title: 'Your work has been saved',
              showConfirmButton: false,
-             timer: 1500
+             timer: 1500,
          })
+         getAllItems();
         }else{
          return;
         }
@@ -186,15 +179,14 @@ $(`#item-delete`).on('click', ()=>{
                         console.error(err)
                     }
             });
-   
-    //LoadItemData();
-    totalItemCount(item_db.length);
+            
     //$(`#item-reset`).click();
           Swal.fire(
             'Deleted!',
             'Your file has been deleted.',
             'success'
           )
+          getAllItems();
         }
       })
 
@@ -220,6 +212,31 @@ $('#btn-search-item').on('click', ()=>{
     }
 
 });
+
+function getAllItems(){
+    $.ajax({
+        method:"GET",
+        url:"http://localhost:8080/pos_backend_war_exploded/item",
+        async:true,
+        success: function (data) {
+            
+            $('#itemTable').empty();
+            for(let item of data){
+                let itemID = item.id;
+                let itemName = item.name;
+                let itemPrice = item.price;
+                let itemQty = item.qty;
+
+                var row = `<tr><td>${itemID}</td><td>${itemName}</td><td>${itemPrice}</td><td>${itemQty}</td></tr>`;
+                $('#itemTable').append(row);
+        }
+            
+        },
+        error: function (xhr, exception) {
+          alert("Error")
+        }
+    })
+}
 
 //validation
 function validateValues(itemCode, itemName, itemPrice, itemQty){

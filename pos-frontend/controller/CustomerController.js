@@ -8,14 +8,10 @@ const customerName = /^[A-Za-z]+ [A-Za-z]+$/;
 const customerAddress = /^[A-Za-z\s]+$/i;
 const customerSalary = /^[0-9]\d*$/;
 
+
 //load table
-const LoadCustomerData = ()=>{
-    $(`#cusTable`).empty();
-    customer_db.map((item)=>{
-        let record = `<tr><td>${item.cusId}</td><td>${item.cusName}</td><td>${item.cusAddress}</td><td>${item.cusSalary}</td></tr>`;
-        $(`#cusTable`).append(record);
-    });
-}
+getAllEmloyees();
+
 //table on click
 $(`#cusTable`).on('click', 'tr', function(){
     let data_col = $(this).find('td');
@@ -26,7 +22,6 @@ $(`#cusTable`).on('click', 'tr', function(){
 
     row_index = $(this).index();
 });
-
 //add customer
 $(`#add-customer`).on('click', ()=>{
     let cusId = $('#cusId').val();
@@ -61,6 +56,7 @@ $(`#add-customer`).on('click', ()=>{
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    getAllEmloyees();
                 },
                 error: (err)=>{
                     console.error(err)
@@ -113,6 +109,7 @@ $(`#btn-update-customer`).on('click', ()=>{
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    getAllEmloyees();
                 },
                 error: (err)=>{
                     console.error(err)
@@ -142,7 +139,7 @@ $(`#btn-delete-customer`).on('click', ()=>{
            
             //LoadCustomerData();
             //$(`#reset-customer`).click();
-            totalCustomerCount(customer_db.length);
+            //totalCustomerCount(customer_db.length);
 
             const cusData ={
                 id:cusId
@@ -165,6 +162,7 @@ $(`#btn-delete-customer`).on('click', ()=>{
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        getAllEmloyees();
                     },
                     error: (err)=>{
                         console.error(err)
@@ -179,6 +177,7 @@ $(`#btn-delete-customer`).on('click', ()=>{
             'Your file has been deleted.',
             'success'
           )
+          getAllEmloyees();
         }
       })
 
@@ -206,6 +205,32 @@ $('#btn-search-customer').on('click', ()=>{
     
 
 });
+//get All
+function getAllEmloyees(){
+    console.log("Get All Employees");
+    $.ajax({
+        method:"GET",
+        url:"http://localhost:8080/pos_backend_war_exploded/customer",
+        async:true,
+        success: function (data) {
+            
+            $('#cusTable').empty();
+            for(let cus of data){
+                let cusID = cus.id;
+                let cusName = cus.name;
+                let cusaddress = cus.address;
+                let cusSalary = cus.salary;
+
+            var row = `<tr><td>${cusID}</td><td>${cusName}</td><td>${cusaddress}</td><td>${cusSalary}</td></tr>`;
+            $('#cusTable').append(row);
+        }
+            
+        },
+        error: function (xhr, exception) {
+          alert("Error")
+        }
+    })
+}
 //validation
 function validateValues(cusId, cusName, cusAddress, cusSalary){
     const regexarr = [customerIdRegex, customerName, customerAddress, customerSalary];
