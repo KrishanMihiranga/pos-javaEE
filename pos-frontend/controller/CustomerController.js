@@ -2,6 +2,7 @@ import {Customer} from "../model/Customer.js";
 import {customer_db} from "../db/db.js";
 import { totalCustomerCount } from "./DashboardController.js";
 let row_index = null;
+let customer_arr = [];
 
 const customerIdRegex = /C\d{3}/;
 const customerName = /^[A-Za-z]+ [A-Za-z]+$/;
@@ -188,14 +189,15 @@ $('#btn-search-customer').on('click', ()=>{
 
     let requestId = $('#search-customer-input').val();
 
-        let index = customer_db.findIndex(customer => customer.cusId == requestId);
+        let index = customer_arr.findIndex(customer => customer.id == requestId);
 
         if(index !==-1){
-            $('#cusId').val(customer_db[index].cusId);
-            $('#cusName').val(customer_db[index].cusName);
-            $('#cusAddress').val(customer_db[index].cusAddress);
-            $('#cusSalary').val(customer_db[index].cusSalary);
-            row_index = customer_db.findIndex((customer => customer.cusId == requestId));
+            $('#cusId').val(customer_arr[index].id);
+            $('#cusName').val(customer_arr[index].name);
+            $('#cusAddress').val(customer_arr[index].address);
+            $('#cusSalary').val(customer_arr[index].salary);
+
+            row_index = customer_arr.findIndex((customer => customer.id == requestId));
             $('#search-customer-input').val('');
         }else{
             Swal.fire('No matching Customer Found!');
@@ -205,32 +207,38 @@ $('#btn-search-customer').on('click', ()=>{
     
 
 });
+
 //get All
-function getAllEmloyees(){
+function getAllEmloyees() {
     console.log("Get All Employees");
     $.ajax({
-        method:"GET",
-        url:"http://localhost:8080/pos_backend_war_exploded/customer",
-        async:true,
+        method: "GET",
+        url: "http://localhost:8080/pos_backend_war_exploded/customer",
+        async: true,
         success: function (data) {
-            
+
             $('#cusTable').empty();
-            for(let cus of data){
+            for (let cus of data) {
                 let cusID = cus.id;
                 let cusName = cus.name;
                 let cusaddress = cus.address;
                 let cusSalary = cus.salary;
 
-            var row = `<tr><td>${cusID}</td><td>${cusName}</td><td>${cusaddress}</td><td>${cusSalary}</td></tr>`;
-            $('#cusTable').append(row);
-        }
+                var row = `<tr><td>${cusID}</td><td>${cusName}</td><td>${cusaddress}</td><td>${cusSalary}</td></tr>`;
+                $('#cusTable').append(row);
+            }
+
             
+            for (let i = 0; i < data.length; i++) {
+                customer_arr[i] =  data[i] ;
+            }
         },
         error: function (xhr, exception) {
-          alert("Error")
+            alert("Error")
         }
     })
 }
+
 //validation
 function validateValues(cusId, cusName, cusAddress, cusSalary){
     const regexarr = [customerIdRegex, customerName, customerAddress, customerSalary];

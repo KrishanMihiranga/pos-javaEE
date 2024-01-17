@@ -2,6 +2,8 @@ import {Item} from "../model/Item.js";
 import { item_db } from "../db/db.js";
 import { totalItemCount } from "./DashboardController.js";
 let row_index;
+let item_arr = [];
+
 const itemCodeRegex = /I\d{3}/;
 const itemNameRegex = /^[A-Za-z\s]+$/;
 const itemPriceRegex = /^[0-9]\d*$/;
@@ -20,7 +22,6 @@ $(`#itemTable`).on('click', 'tr', function(){
 
     row_index = $(this).index();
 });
-
 
 //add Item
 $(`#item-save`).on('click', ()=>{
@@ -193,18 +194,20 @@ $(`#item-delete`).on('click', ()=>{
 
     
 });
+
 //search Item
 $('#btn-search-item').on('click', ()=>{
     let requestId = $('#search-item-input').val();
-    let index = item_db.findIndex(item => item.itemId == requestId);
+    let index = item_arr.findIndex(item => item.id == requestId);
 
     if(index !==-1){
 
-        $('#itemId').val(item_db[index].itemId);
-        $('#itemName').val(item_db[index].itemName);
-        $('#itemPrice').val(item_db[index].itemPrice);
-        $('#itemQty').val(item_db[index].itemQty);
-        row_index = item_db.findIndex((item => item.itemId == requestId));
+        $('#itemId').val(item_arr[index].id);
+        $('#itemName').val(item_arr[index].name);
+        $('#itemPrice').val(item_arr[index].price);
+        $('#itemQty').val(item_arr[index].qty);
+
+        row_index = item_arr.findIndex((item => item.id == requestId));
         $('#search-item-input').val('');
     }else{
         Swal.fire('No matching Customer Found!');
@@ -231,6 +234,10 @@ function getAllItems(){
                 $('#itemTable').append(row);
         }
             
+        for (let i = 0; i < data.length; i++) {
+            item_arr[i] =  data[i] ;
+        }
+
         },
         error: function (xhr, exception) {
           alert("Error")
