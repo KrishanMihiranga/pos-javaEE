@@ -8,9 +8,13 @@ import { totalOrderCount } from "./DashboardController.js";
 
 var customerRowIndex = null;
 var itemRowIndex = null;
-
+let customer_arr = [];
+let item_arr = [];
+let cartItems = [];
 let currentOrderNumber = 1;
 
+getAllCustomers();
+getAllItems();
 
 function generateOrderID() {
     const orderID = `O${currentOrderNumber.toString().padStart(3, '0')}`;
@@ -23,13 +27,13 @@ var year = currentDate.getFullYear();
 var month = currentDate.getMonth();
 var day = currentDate.getDate();
 $("#order-date-lbl").text(`Order Date : ${year} : ${month} : ${day}`);
-var date =` ${year} : ${month} : ${day}`;
+var date =` ${year}-${month}-${day}`;
 
 //load Cart
 const LoadCart = ()=>{
     $(`#orderedItemTBody`).empty();
     cartItems.map((item)=>{
-        let record = `<tr><td>${item.itemId}</td><td>${item.itemName}</td><td>${item.itemPrice}</td><td>${item.itemQty}</td><td>${item.itemPrice *item.itemQty }</td></tr>`;
+        let record = `<tr><td>${item.id}</td><td>${item.name}</td><td>${item.price}</td><td>${item.qty}</td><td>${item.price *item.qty }</td></tr>`;
         $(`#orderedItemTBody`).append(record);
     });
 }
@@ -37,16 +41,16 @@ const LoadCart = ()=>{
 //load customer ID's to dropdown
 $("#orderCusId>button").on('click', ()=> {
     $("#cusDropdown").empty();
-    customer_db.map((customer) => {
-        $("#cusDropdown").append(`<a class="dropdown-item" href="#"> ${customer.cusId} </a>`);
+    customer_arr.map((customer) => {
+        $("#cusDropdown").append(`<a class="dropdown-item" href="#"> ${customer.id} </a>`);
     });
 });
 
 //load Item Codes to dropdown
 $("#orderItemId>button").on('click', ()=> {
     $("#itemDropdown").empty();
-    item_db.map((item) => {
-        $("#itemDropdown").append(`<a class="dropdown-item" href="#"> ${item.itemId} </a>`);
+    item_arr.map((item) => {
+        $("#itemDropdown").append(`<a class="dropdown-item" href="#"> ${item.id} </a>`);
     });
 });
 
@@ -55,10 +59,10 @@ let buttonText;
 $("#cusDropdown").on('click', "a", function(){
     buttonText = $(this).text().trim();    
     $("#orderCusId>button").text(buttonText);
-    customerRowIndex = customer_db.findIndex(customer => customer.cusId === buttonText);
-    $("#orderCusName").val(customer_db[customerRowIndex].cusName);
-    $("#orderCusAddress").val(customer_db[customerRowIndex].cusAddress);
-    $("#orderCusSalary").val(customer_db[customerRowIndex].cusSalary);
+    customerRowIndex = customer_arr.findIndex(customer => customer.id === buttonText);
+    $("#orderCusName").val(customer_arr[customerRowIndex].name);
+    $("#orderCusAddress").val(customer_arr[customerRowIndex].address);
+    $("#orderCusSalary").val(customer_arr[customerRowIndex].salary);
 });
 
 //set item details to fields
@@ -66,16 +70,15 @@ let selectedItem;
 $("#itemDropdown").on('click', "a", function(){
     selectedItem = $(this).text().trim();
     $("#orderItemId>button").text(selectedItem);
-    itemRowIndex = item_db.findIndex(item => item.itemId == selectedItem);
+    itemRowIndex = item_arr.findIndex(item => item.id == selectedItem);
 
-    $("#orderItemName").val(item_db[itemRowIndex].itemName);
-    $("#orderItemPrice").val(item_db[itemRowIndex].itemPrice);
-    $("#qty-on-hand").val(item_db[itemRowIndex].itemQty);
+    $("#orderItemName").val(item_arr[itemRowIndex].name);
+    $("#orderItemPrice").val(item_arr[itemRowIndex].price);
+    $("#qty-on-hand").val(item_arr[itemRowIndex].qty);
 });
 
 //add to cart
 var total = 0;
-let cartItems = [];
 $("#add-item-btn").on('click', ()=>{
     var itemId = selectedItem;
     var itemName = $("#orderItemName").val();
@@ -94,12 +97,8 @@ $("#add-item-btn").on('click', ()=>{
         total += itemTotal;
         $("#subTotal").text("Sub Total: " + total);
     
-        item_db[itemRowIndex].itemQty= itemQtyOnHand - itemQty
-        $("#qty-on-hand").val(item_db[itemRowIndex].itemQty);
-    
         cartItems.push(new Item(itemId, itemName, itemPrice , itemQty));
         LoadCart();
-        itemQty.val('');
     }
 
     
@@ -124,14 +123,48 @@ $("#cash").on('input', function(){
 });
 
 $("#order-btn").on('click', () => {
-        var newOrderID = generateOrderID();
-        var orderObj = new Order(newOrderID, date, buttonText, cartItems, discount, totalVal);
-        order_db.push(orderObj);
-        totalOrderCount(order_db.length);
-        ClearFields();
-        $("#order-id-lbl").text("Order Id : " + newOrderID);
+        var newOrderID = "O006";
+        var cusId = buttonText;
+        var name = $("#orderCusName").val();
+        var address = $("#orderCusAddress").val();
+        var salary = $("#orderCusSalary").val();
 
+        var customerObj = new Customer(cusId, name, address, salary);
+
+        const Order ={
+            id:newOrderID,
+            date: new Date().toISOString().split('T')[0],
+            customer: customerObj,
+            items: cartItems,
+            discount: discount,
+            total: totalVal
+        }
+        console.log(Order)
+        const orderJson = JSON.stringify(Order);
+
+        $.ajax({
+            url:"http://localhost:8080/pos_backend_war_exploded/order",
+                type:"POST",
+                data:orderJson,
+                headers:{"Content-Type":"application/json"},
+                success: (res) =>{
+                    console.log(JSON.stringify(res))
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    getAllItems;
+                    getAllCustomers;
+                },
+                error: (err)=>{
+                    console.error(err)
+                }
+        });
 });
+
 function ClearFields(){
     $("#orderCusName").val(null);
     $("#orderCusAddress").val(null);
@@ -152,3 +185,58 @@ function ClearFields(){
     total = 0;
     totalVal = 0;
 }
+
+function getAllCustomers() {
+    $.ajax({
+        method: "GET",
+        url: "http://localhost:8080/pos_backend_war_exploded/customer",
+        async: true,
+        success: function (data) {
+
+            for (let i = 0; i < data.length; i++) {
+                customer_arr[i] =  data[i] ;
+            }
+        },
+        error: function (xhr, exception) {
+            alert("Error")
+        }
+    })
+}
+
+function getAllItems() {
+    $.ajax({
+        method: "GET",
+        url: "http://localhost:8080/pos_backend_war_exploded/item",
+        async: true,
+        success: function (data) {
+
+            for (let i = 0; i < data.length; i++) {
+                item_arr[i] =  data[i] ;
+            }
+        },
+        error: function (xhr, exception) {
+            alert("Error")
+        }
+    })
+}
+
+// {
+//     "id": "O001",
+//     "date": "2024-01-23",
+//     "customer": {
+//         "id": "C001",
+//         "name": "John Doe",
+//         "address": "123 Main St",
+//         "salary": 50000.00
+//     },
+//     "items": [
+//         {
+//             "id": "I001",
+//             "name": "Product A",
+//             "price": 20.99,
+//             "qty": 2
+//         }
+//     ],
+//     "discount": 100.00,
+//     "total": 500.99
+// }

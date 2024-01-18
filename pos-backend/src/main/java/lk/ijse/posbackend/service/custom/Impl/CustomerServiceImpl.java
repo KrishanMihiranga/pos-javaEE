@@ -4,7 +4,14 @@ import lk.ijse.posbackend.entity.Customer;
 import lk.ijse.posbackend.service.custom.CustomerService;
 import org.hibernate.Session;
 
+import java.util.List;
+
 public class CustomerServiceImpl implements CustomerService {
+    @Override
+    public List<Customer> getAll(Session session) throws Exception {
+        return session.createQuery("FROM Customer", Customer.class).getResultList();
+    }
+
     @Override
     public boolean save(Customer customer, Session session) throws Exception {
         session.persist(customer);

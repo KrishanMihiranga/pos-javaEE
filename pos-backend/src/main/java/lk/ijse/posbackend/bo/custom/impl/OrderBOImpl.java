@@ -1,13 +1,19 @@
 package lk.ijse.posbackend.bo.custom.impl;
 
 import lk.ijse.posbackend.bo.custom.OrderBO;
+import lk.ijse.posbackend.dto.CustomerDTO;
 import lk.ijse.posbackend.dto.OrderDTO;
+import lk.ijse.posbackend.entity.Customer;
+import lk.ijse.posbackend.entity.OrderEntity;
 import lk.ijse.posbackend.service.ServiceFactory;
 import lk.ijse.posbackend.service.custom.OrderService;
 import lk.ijse.posbackend.utill.Convert;
 import lk.ijse.posbackend.utill.HibernateFactoryConfig;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderBOImpl implements OrderBO {
     private OrderService orderService = (OrderService) ServiceFactory.getInstance().getService(ServiceFactory.Servicetypes.ORDER);
@@ -23,5 +29,15 @@ public class OrderBOImpl implements OrderBO {
         }
         session.close();
         return false;
+    }
+
+    @Override
+    public List<OrderDTO> getAllOrders() throws Exception {
+        List<OrderEntity> all = orderService.getAll(HibernateFactoryConfig.getInstance().getSession());
+        List<OrderDTO> orderDTOS = new ArrayList<>();
+        for (OrderEntity order : all){
+            orderDTOS.add(Convert.orderDetailEntityToDto(order));
+        }
+        return orderDTOS;
     }
 }

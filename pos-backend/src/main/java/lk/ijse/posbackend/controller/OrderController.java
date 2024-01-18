@@ -12,6 +12,7 @@ import lk.ijse.posbackend.bo.custom.OrderBO;
 import lk.ijse.posbackend.dto.OrderDTO;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name = "Order", urlPatterns = "/order", loadOnStartup = 3)
 public class OrderController extends HttpServlet {
@@ -42,5 +43,22 @@ public class OrderController extends HttpServlet {
         System.out.println("init order");
 
 
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Do Get");
+        try{
+            List<OrderDTO> orders = orderBO.getAllOrders();
+            System.out.println(orders);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String jsonItems = objectMapper.writeValueAsString(orders);
+
+            resp.setContentType("application/json");
+            resp.getWriter().write(jsonItems);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

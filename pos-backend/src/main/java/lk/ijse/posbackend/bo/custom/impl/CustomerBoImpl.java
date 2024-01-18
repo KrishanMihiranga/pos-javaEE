@@ -2,6 +2,7 @@ package lk.ijse.posbackend.bo.custom.impl;
 
 import lk.ijse.posbackend.bo.custom.CustomerBO;
 import lk.ijse.posbackend.dto.CustomerDTO;
+import lk.ijse.posbackend.entity.Customer;
 import lk.ijse.posbackend.service.ServiceFactory;
 import lk.ijse.posbackend.service.custom.CustomerService;
 import lk.ijse.posbackend.service.custom.Impl.CustomerServiceImpl;
@@ -10,8 +11,21 @@ import lk.ijse.posbackend.utill.HibernateFactoryConfig;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomerBoImpl implements CustomerBO {
     private CustomerService customerService= (CustomerServiceImpl) ServiceFactory.getInstance().getService(ServiceFactory.Servicetypes.CUSTOMER);
+
+    @Override
+    public List<CustomerDTO> getAllCustomers() throws Exception {
+        List<Customer> all = customerService.getAll(HibernateFactoryConfig.getInstance().getSession());
+        List<CustomerDTO> customerDTOS = new ArrayList<>();
+        for (Customer customer : all){
+            customerDTOS.add(Convert.customerEntityToDto(customer));
+        }
+        return customerDTOS;
+    }
 
     @Override
     public boolean saveCustomer(CustomerDTO dto) throws Exception {

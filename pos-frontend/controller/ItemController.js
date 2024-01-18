@@ -82,6 +82,7 @@ $(`#item-save`).on('click', ()=>{
 
     
 );
+
 //update Item
 $(`#item-update`).on('click', ()=>{
    let itemId = $('#itemId').val();
@@ -140,6 +141,7 @@ $(`#item-update`).on('click', ()=>{
 
     
 });
+
 //delete customer
 $(`#item-delete`).on('click', ()=>{
 
@@ -216,6 +218,7 @@ $('#btn-search-item').on('click', ()=>{
 
 });
 
+//get all Items
 function getAllItems(){
     $.ajax({
         method:"GET",

@@ -11,9 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.posbackend.bo.BOFactory;
 import lk.ijse.posbackend.bo.custom.ItemBO;
 import lk.ijse.posbackend.bo.custom.impl.ItemBoImpl;
+import lk.ijse.posbackend.dto.CustomerDTO;
 import lk.ijse.posbackend.dto.ItemDTO;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name = "Item", urlPatterns = "/item", loadOnStartup = 3)
 public class ItemController extends HttpServlet {
@@ -76,6 +78,22 @@ public class ItemController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             resp.getWriter().write("Error");
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Do Get");
+        try{
+            List<ItemDTO> items = itemBO.getAllItems();
+            System.out.println(items);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonItems = objectMapper.writeValueAsString(items);
+
+            resp.setContentType("application/json");
+            resp.getWriter().write(jsonItems);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
