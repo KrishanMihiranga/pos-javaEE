@@ -11,17 +11,11 @@ var itemRowIndex = null;
 let customer_arr = [];
 let item_arr = [];
 let cartItems = [];
+let order_arr = [];
 let currentOrderNumber = 1;
+let nextOrderId;
 
-getAllCustomers();
-getAllItems();
 
-function generateOrderID() {
-    const orderID = `O${currentOrderNumber.toString().padStart(3, '0')}`;
-    currentOrderNumber++;
-    return orderID;
-}
-    
 var currentDate = new Date();
 var year = currentDate.getFullYear();
 var month = currentDate.getMonth();
@@ -123,7 +117,7 @@ $("#cash").on('input', function(){
 });
 
 $("#order-btn").on('click', () => {
-        var newOrderID = "O006";
+        var newOrderID = nextOrderId;
         var cusId = buttonText;
         var name = $("#orderCusName").val();
         var address = $("#orderCusAddress").val();
@@ -156,8 +150,13 @@ $("#order-btn").on('click', () => {
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    getAllItems;
-                    getAllCustomers;
+                    getAllItems();
+                    getAllCustomers();
+                    getAllOrders(function () {
+                        getAllCustomers();
+                        getAllItems();
+                        generateOrderID();
+                    });
                 },
                 error: (err)=>{
                     console.error(err)
@@ -220,23 +219,46 @@ function getAllItems() {
     })
 }
 
-// {
-//     "id": "O001",
-//     "date": "2024-01-23",
-//     "customer": {
-//         "id": "C001",
-//         "name": "John Doe",
-//         "address": "123 Main St",
-//         "salary": 50000.00
-//     },
-//     "items": [
-//         {
-//             "id": "I001",
-//             "name": "Product A",
-//             "price": 20.99,
-//             "qty": 2
-//         }
-//     ],
-//     "discount": 100.00,
-//     "total": 500.99
-// }
+
+function getAllOrders(callback) {
+    $.ajax({
+        method: "GET",
+        url: "http://localhost:8080/pos_backend_war_exploded/order",
+        async: true,
+        success: function (data) {
+            for (let i = 0; i < data.length; i++) {
+                order_arr[i] = data[i];
+            }
+            callback();
+        },
+        error: function (xhr, exception) {
+            alert("Error");
+        }
+    });
+}
+
+function generateOrderID() {
+    console.log('Generate Order Id');
+
+    const lastOrder = order_arr.length > 0 ? order_arr[order_arr.length - 1] : 'Array is empty';
+    console.log(lastOrder);
+    console.log(order_arr);
+    const lastOrderId = lastOrder ? lastOrder.id : 'O001';
+
+    console.log(lastOrderId);
+
+    const lastOrderNumber = parseInt(lastOrderId.substr(1), 10);
+
+    const nextOrderNumber = lastOrderNumber + 1;
+    nextOrderId = `O${nextOrderNumber.toString().padStart(3, '0')}`;
+    
+    console.log(nextOrderId);
+    $('#order-id-lbl').text(`Order ID : ${nextOrderId}`);
+   
+}
+
+getAllOrders(function () {
+    getAllCustomers();
+    getAllItems();
+    generateOrderID();
+});
