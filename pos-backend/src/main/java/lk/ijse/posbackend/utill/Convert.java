@@ -3,9 +3,11 @@ package lk.ijse.posbackend.utill;
 import lk.ijse.posbackend.dto.CustomerDTO;
 import lk.ijse.posbackend.dto.ItemDTO;
 import lk.ijse.posbackend.dto.OrderDTO;
+import lk.ijse.posbackend.dto.UserDTO;
 import lk.ijse.posbackend.entity.Customer;
 import lk.ijse.posbackend.entity.Item;
 import lk.ijse.posbackend.entity.OrderEntity;
+import lk.ijse.posbackend.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,13 @@ public class Convert {
     public static ItemDTO itemEntityToDto(Item item){
         return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getQty());
     }
+    public static User userDTOToEntity(UserDTO dto){
+        return new User(dto.getEmail(), dto.getUsername(), dto.getPassword());
+    }
+    public static UserDTO userEntityToDto(User user){
+        return new UserDTO(user.getEmail(), user.getUsername(), user.getPassword());
+    }
+
 
     public static OrderEntity orderDetailDTOToEntity(OrderDTO dto){
         System.out.println(dto);

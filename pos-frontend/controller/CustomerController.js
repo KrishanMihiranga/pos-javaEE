@@ -1,5 +1,3 @@
-import {Customer} from "../model/Customer.js";
-import {customer_db} from "../db/db.js";
 import { totalCustomerCount } from "./DashboardController.js";
 let row_index = null;
 let customer_arr = [];
@@ -12,7 +10,7 @@ const customerSalary = /^[0-9]\d*$/;
 
 //load table
 getAllEmloyees();
-
+totalCustomerCount(customer_arr.length)
 //table on click
 $(`#cusTable`).on('click', 'tr', function(){
     let data_col = $(this).find('td');
@@ -64,10 +62,10 @@ $(`#add-customer`).on('click', ()=>{
                 }
         });
         
-        // LoadCustomerData();
-        //$(`#reset-customer`).click();
+        
+        $(`#reset-customer`).click();
     
-        totalCustomerCount(customer_db.length);
+        totalCustomerCount(customer_arr.length);
         }else{
             return;
         }
@@ -118,7 +116,7 @@ $(`#btn-update-customer`).on('click', ()=>{
         });
         
             
-           
+        $(`#reset-customer`).click();
         }else{
             return;
         }
@@ -172,12 +170,13 @@ $(`#btn-delete-customer`).on('click', ()=>{
 
 
 
-
+           
           Swal.fire(
             'Deleted!',
             'Your file has been deleted.',
             'success'
           )
+          $(`#reset-customer`).click();
           getAllEmloyees();
         }
       })

@@ -1,7 +1,3 @@
-import {order_db} from "../db/db.js";
-import {Order} from "../model/Order.js";
-import {customer_db} from "../db/db.js";
-import {item_db} from "../db/db.js";
 import {Customer} from "../model/Customer.js";
 import { Item } from "../model/Item.js";
 import { totalOrderCount } from "./DashboardController.js";
@@ -87,6 +83,7 @@ $("#add-item-btn").on('click', ()=>{
             text: 'Not enough items!'
           })
     }else{
+       $("#qty-on-hand").val(itemQtyOnHand - itemQty);
         var itemTotal = itemPrice * itemQty;
         total += itemTotal;
         $("#subTotal").text("Sub Total: " + total);
@@ -157,11 +154,13 @@ $("#order-btn").on('click', () => {
                         getAllItems();
                         generateOrderID();
                     });
+                    totalOrderCount(order_arr.length);
                 },
                 error: (err)=>{
                     console.error(err)
                 }
         });
+        ClearFields();
 });
 
 function ClearFields(){

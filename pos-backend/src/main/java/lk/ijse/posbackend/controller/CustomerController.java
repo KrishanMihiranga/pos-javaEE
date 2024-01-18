@@ -12,18 +12,35 @@ import lk.ijse.posbackend.bo.BOFactory;
 import lk.ijse.posbackend.bo.custom.CustomerBO;
 import lk.ijse.posbackend.bo.custom.impl.CustomerBoImpl;
 import lk.ijse.posbackend.dto.CustomerDTO;
+import lk.ijse.posbackend.entity.Customer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 
 @WebServlet(name = "Customer", urlPatterns = "/customer", loadOnStartup = 4)
 public class CustomerController extends HttpServlet {
+    Connection connection;
+    final static Logger logger = LoggerFactory.getLogger(Customer.class);
 
     private CustomerBO customerBO = (CustomerBoImpl) BOFactory.getInstance().getBo(BOFactory.BOTypes.CUSTOMER);
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        System.out.println("Init Customer Controller");
+        logger.info("Init The Customer Servlet");
+
+        try {
+            InitialContext ctx = new InitialContext();
+            DataSource pool = (DataSource) ctx.lookup("java:comp/env/jdbc/pos");
+            System.out.println(pool);
+            this.connection = pool.getConnection();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

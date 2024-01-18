@@ -1,15 +1,6 @@
-import {customer_db} from "../db/db.js";
-import { item_db } from "../db/db.js";
-import { order_db } from "../db/db.js";
-
-
-var totalCustomers = customer_db.length;
-var totalItems = item_db.length;
-var totalOrders = order_db.length;
-
-totalCustomerCount(totalCustomers);
-totalItemCount(totalItems);
-totalOrderCount(totalOrders);
+totalCustomerCount(0);
+totalItemCount(0);
+totalOrderCount(0);
 
 export function totalCustomerCount(count){
     $('#total-customers').text(count);

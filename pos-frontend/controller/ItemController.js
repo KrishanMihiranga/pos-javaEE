@@ -1,5 +1,3 @@
-import {Item} from "../model/Item.js";
-import { item_db } from "../db/db.js";
 import { totalItemCount } from "./DashboardController.js";
 let row_index;
 let item_arr = [];
@@ -64,7 +62,7 @@ $(`#item-save`).on('click', ()=>{
                 }
         });
     
-    //  $(`#item-reset`).click();
+      $(`#item-reset`).click();
  
      Swal.fire({
          position: 'top-end',
@@ -75,6 +73,7 @@ $(`#item-save`).on('click', ()=>{
      })
 
      getAllItems();
+     totalItemCount(item_arr.length);
     }else{
      return;
     }
@@ -124,7 +123,7 @@ $(`#item-update`).on('click', ()=>{
             });
             
 
-        // $(`#item-reset`).click();
+         $(`#item-reset`).click();
         
          Swal.fire({
              position: 'top-end',
@@ -183,7 +182,7 @@ $(`#item-delete`).on('click', ()=>{
                     }
             });
             
-    //$(`#item-reset`).click();
+    $(`#item-reset`).click();
           Swal.fire(
             'Deleted!',
             'Your file has been deleted.',

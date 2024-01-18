@@ -8,4 +8,6 @@ import java.util.List;
 public interface OrderBO extends SuperBO {
     boolean saveOrder(OrderDTO dto) throws Exception;
     List<OrderDTO> getAllOrders() throws  Exception;
+    boolean updateOrder(OrderDTO dto) throws Exception;
+    void updateOrderQtyByOrderID(String id, int qty) throws Exception;
 }

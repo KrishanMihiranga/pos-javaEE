@@ -13,6 +13,10 @@ import lk.ijse.posbackend.bo.custom.ItemBO;
 import lk.ijse.posbackend.bo.custom.impl.ItemBoImpl;
 import lk.ijse.posbackend.dto.CustomerDTO;
 import lk.ijse.posbackend.dto.ItemDTO;
+import lk.ijse.posbackend.entity.Customer;
+import lk.ijse.posbackend.entity.Item;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,10 +24,10 @@ import java.util.List;
 @WebServlet(name = "Item", urlPatterns = "/item", loadOnStartup = 3)
 public class ItemController extends HttpServlet {
     private ItemBO itemBO = (ItemBoImpl) BOFactory.getInstance().getBo(BOFactory.BOTypes.ITEM);
-
+    final static Logger logger = LoggerFactory.getLogger(Item.class);
     @Override
     public void init(ServletConfig config) throws ServletException {
-        System.out.println("Init Item Controller");
+        logger.info("Init The Item Servlet");
     }
 
     @Override
