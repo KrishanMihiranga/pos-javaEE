@@ -139,7 +139,10 @@ $("#order-btn").on('click', () => {
                 data:orderJson,
                 headers:{"Content-Type":"application/json"},
                 success: (res) =>{
-                    console.log(JSON.stringify(res))
+                    if(res == "Error"){
+                        alert("Duplicate Order ID")
+                    }else{
+                        console.log(JSON.stringify(res))
                     Swal.fire({
                         position: 'top-end',
                         icon: 'success',
@@ -155,7 +158,9 @@ $("#order-btn").on('click', () => {
                         generateOrderID();
                     });
                     totalOrderCount(order_arr.length);
-                },
+
+                    }
+                                    },
                 error: (err)=>{
                     console.error(err)
                 }

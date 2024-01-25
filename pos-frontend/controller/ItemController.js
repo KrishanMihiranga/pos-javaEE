@@ -48,7 +48,10 @@ $(`#item-save`).on('click', ()=>{
                 data:itemJson,
                 headers:{"Content-Type":"application/json"},
                 success: (res) =>{
-                    console.log(JSON.stringify(res))
+                    if(res == "Error"){
+                        alert("Duplicate Entry")
+                    }else{
+                        console.log(JSON.stringify(res))
                     Swal.fire({
                         position: 'top-end',
                         icon: 'success',
@@ -56,6 +59,8 @@ $(`#item-save`).on('click', ()=>{
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    }
+                    
                 },
                 error: (err)=>{
                     console.error(err)
@@ -64,14 +69,6 @@ $(`#item-save`).on('click', ()=>{
     
       $(`#item-reset`).click();
  
-     Swal.fire({
-         position: 'top-end',
-         icon: 'success',
-         title: 'Your work has been saved',
-         showConfirmButton: false,
-         timer: 1500
-     })
-
      getAllItems();
      totalItemCount(item_arr.length);
     }else{
@@ -107,7 +104,10 @@ $(`#item-update`).on('click', ()=>{
                     data:itemJson,
                     headers:{"Content-Type":"application/json"},
                     success: (res) =>{
-                        console.log(JSON.stringify(res))
+                        if(res == "Error"){
+                            alert("No matching Item found")
+                        }else{
+                            console.log(JSON.stringify(res))
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
@@ -116,6 +116,8 @@ $(`#item-update`).on('click', ()=>{
                             timer: 1500
                         })
                         getAllItems();
+                        }
+                        
                     },
                     error: (err)=>{
                         console.error(err)
@@ -125,13 +127,6 @@ $(`#item-update`).on('click', ()=>{
 
          $(`#item-reset`).click();
         
-         Swal.fire({
-             position: 'top-end',
-             icon: 'success',
-             title: 'Your work has been saved',
-             showConfirmButton: false,
-             timer: 1500,
-         })
          getAllItems();
         }else{
          return;
@@ -168,7 +163,11 @@ $(`#item-delete`).on('click', ()=>{
                     data:itemJson,
                     headers:{"Content-Type":"application/json"},
                     success: (res) =>{
-                        console.log(JSON.stringify(res))
+
+                        if(res == "Error"){
+                            alert("No matching Item found")
+                        }else{
+                            console.log(JSON.stringify(res))
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
@@ -176,6 +175,8 @@ $(`#item-delete`).on('click', ()=>{
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        }
+                        
                     },
                     error: (err)=>{
                         console.error(err)
@@ -183,11 +184,7 @@ $(`#item-delete`).on('click', ()=>{
             });
             
     $(`#item-reset`).click();
-          Swal.fire(
-            'Deleted!',
-            'Your file has been deleted.',
-            'success'
-          )
+         
           getAllItems();
         }
       })

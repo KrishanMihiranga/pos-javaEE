@@ -48,14 +48,18 @@ $(`#add-customer`).on('click', ()=>{
                 headers:{"Content-Type":"application/json"},
                 success: (res) =>{
                     console.log(JSON.stringify(res))
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Your work has been saved',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    getAllEmloyees();
+                    if(res == "Error"){
+                        alert("Duplicate Entry")
+                    }else{
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Your work has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        getAllEmloyees();
+                    }
                 },
                 error: (err)=>{
                     console.error(err)
@@ -100,7 +104,10 @@ $(`#btn-update-customer`).on('click', ()=>{
                 data:customerJson,
                 headers:{"Content-Type":"application/json"},
                 success: (res) =>{
-                    console.log(JSON.stringify(res))
+                    if(res === "Error"){
+                        alert("No matching Customer found")
+                    }else{
+                        console.log(JSON.stringify(res))
                     Swal.fire({
                         position: 'top-end',
                         icon: 'success',
@@ -109,6 +116,8 @@ $(`#btn-update-customer`).on('click', ()=>{
                         timer: 1500
                     })
                     getAllEmloyees();
+                    }
+                    
                 },
                 error: (err)=>{
                     console.error(err)
@@ -153,29 +162,25 @@ $(`#btn-delete-customer`).on('click', ()=>{
                     data:customerJson,
                     headers:{"Content-Type":"application/json"},
                     success: (res) =>{
-                        console.log(JSON.stringify(res))
+                        if(res == "Error"){
+                            alert("No Matching Customer found")
+                        }else{
+                            console.log(JSON.stringify(res))
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Your work has been saved',
+                            title: 'Customer Deleted',
                             showConfirmButton: false,
                             timer: 1500
                         })
                         getAllEmloyees();
+                        }
+                        
                     },
                     error: (err)=>{
                         console.error(err)
                     }
             });
-
-
-
-           
-          Swal.fire(
-            'Deleted!',
-            'Your file has been deleted.',
-            'success'
-          )
           $(`#reset-customer`).click();
           getAllEmloyees();
         }
