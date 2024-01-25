@@ -38,12 +38,15 @@ public class ItemController extends HttpServlet {
 
         try {
             if (itemBO.updateItem(item)){
+                logger.info("Item Updated");
                 resp.getWriter().write("Item Updated");
             }else{
+                logger.info("Error while updating Item");
                 resp.getWriter().write("Error while updating Item");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
@@ -56,12 +59,15 @@ public class ItemController extends HttpServlet {
 
         try {
             if (itemBO.saveItem(item)){
+                logger.info("Item Saved");
                 resp.getWriter().write("Item Saved");
             }else{
+                logger.info("Error while saving Item");
                 resp.getWriter().write("Error while saving Item");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
@@ -75,19 +81,22 @@ public class ItemController extends HttpServlet {
             String id = jsonNode.get("id").asText();
 
             if (itemBO.deleteItem(id)) {
+                logger.info("Item Deleted");
                 resp.getWriter().write("Item Deleted");
             } else {
+                logger.info("Error while deleting Item");
                 resp.getWriter().write("Error while deleting Item");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Get");
+        logger.info("Item DoGet");
         try{
             List<ItemDTO> items = itemBO.getAllItems();
             System.out.println(items);
@@ -95,7 +104,9 @@ public class ItemController extends HttpServlet {
             String jsonItems = objectMapper.writeValueAsString(items);
 
             resp.setContentType("application/json");
+            logger.info("Successful");
             resp.getWriter().write(jsonItems);
+
         }catch (Exception e){
             e.printStackTrace();
         }

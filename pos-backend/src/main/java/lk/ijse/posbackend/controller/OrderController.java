@@ -40,19 +40,20 @@ public class OrderController extends HttpServlet {
 //                    System.out.println("Sum of qty for id " + entry.getKey() + ": " + entry.getValue());
                     updateItemQtyByID(entry.getKey(), entry.getValue());
                 }
+                logger.info("Order Saved");
                 resp.getWriter().write("Order Saved");
             }else{
+                logger.info("Error while saving Order");
                 resp.getWriter().write("Error while saving order");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
 
     public void updateItemQtyByID(String id , int qty) throws Exception {
-
-
         orderBO.updateOrderQtyByOrderID(id, qty);
     }
 
@@ -73,7 +74,6 @@ public class OrderController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Get");
         try{
             List<OrderDTO> orders = orderBO.getAllOrders();
             System.out.println(orders);
@@ -82,6 +82,7 @@ public class OrderController extends HttpServlet {
             String jsonItems = objectMapper.writeValueAsString(orders);
 
             resp.setContentType("application/json");
+            logger.info("Fetched");
             resp.getWriter().write(jsonItems);
         }catch (Exception e){
             e.printStackTrace();
@@ -96,12 +97,15 @@ public class OrderController extends HttpServlet {
 
         try {
             if (orderBO.updateOrder(order)){
+                logger.info("Order Updated");
                 resp.getWriter().write("Order Updated");
             }else{
+                logger.info("Error while updating Order");
                 resp.getWriter().write("Error while updating Order");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }

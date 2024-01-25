@@ -38,19 +38,21 @@ public class UserController extends HttpServlet {
 
         try {
             if(userBO.saveUser(userDTO)){
-                resp.getWriter().write("Order Saved");
+                logger.info("User Saved");
+                resp.getWriter().write("User Saved");
             }else{
-                resp.getWriter().write("Error while saving order");
+                logger.info("Error while saving User");
+                resp.getWriter().write("Error while saving User");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Get");
         try{
             List<UserDTO> users = userBO.getAuth();
             System.out.println(users);
@@ -58,6 +60,7 @@ public class UserController extends HttpServlet {
             String jsonUsers = objectMapper.writeValueAsString(users);
 
             resp.setContentType("application/json");
+            logger.info("Fetched");
             resp.getWriter().write(jsonUsers);
         }catch (Exception e){
             e.printStackTrace();

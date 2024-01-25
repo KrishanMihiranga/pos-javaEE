@@ -36,7 +36,6 @@ public class CustomerController extends HttpServlet {
         try {
             InitialContext ctx = new InitialContext();
             DataSource pool = (DataSource) ctx.lookup("java:comp/env/jdbc/pos");
-            System.out.println(pool);
             this.connection = pool.getConnection();
         }catch (Exception e){
             e.printStackTrace();
@@ -45,7 +44,7 @@ public class CustomerController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Do Get");
+        logger.info("Customer DoGet");
         try{
             List<CustomerDTO> customers = customerBO.getAllCustomers();
             System.out.println(customers);
@@ -67,12 +66,15 @@ public class CustomerController extends HttpServlet {
 
         try {
             if (customerBO.saveCustomer(customer)){
+                logger.info("Customer Saved");
                 resp.getWriter().write("Customer Saved");
             }else{
+                logger.info("Error while saving Customer");
                 resp.getWriter().write("Error while saving Customer");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
@@ -85,12 +87,15 @@ public class CustomerController extends HttpServlet {
 
         try {
             if (customerBO.updateCustomer(customer)){
+                logger.info("Customer Updated");
                 resp.getWriter().write("Customer Updated");
             }else{
+                logger.info("Error while updating Customer");
                 resp.getWriter().write("Error while updating Customer");
             }
         }catch (Exception e){
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
@@ -104,12 +109,15 @@ public class CustomerController extends HttpServlet {
             String id = jsonNode.get("id").asText();
 
             if (customerBO.deleteCustomer(id)) {
+                logger.info("Customer Deleted");
                 resp.getWriter().write("Customer Deleted");
             } else {
+                logger.info("Error while deleting Customer");
                 resp.getWriter().write("Error while deleting Customer");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("Error");
             resp.getWriter().write("Error");
         }
     }
